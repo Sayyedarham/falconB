@@ -78,7 +78,7 @@ export default function AccountScreen() {
   };
 
   const formatCurrency = (amount: number) => {
-    return `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+    return `₹${amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
   };
 
   const formatBalance = (amount: number) => {

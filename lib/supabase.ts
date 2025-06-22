@@ -2,10 +2,13 @@ import 'react-native-url-polyfill/auto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
+const extra = Constants.expoConfig?.extra || Constants?.manifest?.extra
+const supabaseURL = extra?.supabaseUrl;
+const supabaseKey = extra?.supabaseKey;
 
+ console.log(supabaseURL,supabaseKey);
 // Use AsyncStorage only on native platforms
 const storage = Platform.OS === 'web' ? undefined : {
   getItem: (key: string) => {
@@ -19,7 +22,7 @@ const storage = Platform.OS === 'web' ? undefined : {
   },
 };
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient(supabaseURL, supabaseKey, {
   auth: {
     storage: storage,
     autoRefreshToken: true,
