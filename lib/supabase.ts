@@ -24,9 +24,20 @@ const storage = Platform.OS === 'web' ? undefined : {
 
 export const supabase = createClient(supabaseURL, supabaseKey, {
   auth: {
-    storage: storage,
+    storage: AsyncStorage,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
   },
 });
+
+export const createTicket = async (amount:number,type:string) =>{
+  const {data, error}  = await supabase
+    .from("Tickets")
+    .insert([
+      amount,
+      type,
+    ])
+  if(error) return error
+  else return data
+}

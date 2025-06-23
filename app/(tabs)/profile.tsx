@@ -13,7 +13,6 @@ import { User, Settings, CircleHelp as HelpCircle, Shield, LogOut, ChevronRight 
 
 export default function ProfileScreen() {
   const { user, signOut } = useAuth();
-
   const handleSignOut = () => {
     Alert.alert(
       'Sign Out',
@@ -50,6 +49,16 @@ export default function ProfileScreen() {
       title: 'Help & Support',
       subtitle: 'Get help and contact support',
       onPress: () => {},
+    },
+     {
+      icon: HelpCircle,
+      title: 'Tickets',
+      subtitle: 'See status of your tickets',
+      onPress: () => {
+        router.push({
+          pathname: '/tickets',
+        });
+      },
     },
   ];
 
@@ -89,7 +98,7 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         ))}
       </View>
-
+        
       {/* Sign Out Button */}
       <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
         <LogOut size={20} color="#FF3B30" />

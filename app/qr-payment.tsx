@@ -21,67 +21,113 @@ export default function QRPaymentScreen() {
   const { user } = useAuth();
   const [processing, setProcessing] = useState(false);
 
+  // const handlePaymentMade = async () => {
+  //   if (!user || !amount) return;
+
+  //   setProcessing(true);
+
+  //   try {
+  //     const { data: profileData, error: fetchError } = await supabase
+  //       .from('profiles')
+  //       .select('balance')
+  //       .eq('id', user.id)
+  //       .single();
+
+  //     if (fetchError) throw fetchError;
+
+  //     const currentBalance = profileData?.balance || 0;
+  //     const depositAmount = parseFloat(amount);
+  //     const newBalance = currentBalance + depositAmount;
+
+  //     const { error: updateError } = await supabase
+  //       .from('profiles')
+  //       .update({ balance: newBalance })
+  //       .eq('id', user.id);
+
+  //     if (updateError) throw updateError;
+
+  //     const { error: transactionError } = await supabase
+  //       .from('transactions')
+  //       .insert({
+  //         user_id: user.id,
+  //         type: 'deposit',
+  //         amount: depositAmount,
+  //       });
+
+  //     if (transactionError) {
+  //       console.error('Transaction record error:', transactionError);
+  //     }
+
+  //     Alert.alert(
+  //       'Payment Successful!',
+  //       `₹${depositAmount.toLocaleString('en-IN')} has been added to your account.`,
+  //       [
+  //         {
+  //           text: 'OK',
+  //           onPress: () => {
+  //             router.dismissAll();
+  //             router.replace('/(tabs)');
+  //           },
+  //         },
+  //       ]
+  //     );
+  //   } catch (error) {
+  //     console.error('Payment processing error:', error);
+  //     Alert.alert(
+  //       'Payment Failed',
+  //       'There was an error processing your payment. Please try again.',
+  //       [{ text: 'OK' }]
+  //     );
+  //   } finally {
+  //     setProcessing(false);
+  //   }
+  // };
   const handlePaymentMade = async () => {
-    if (!user || !amount) return;
+  if (!user || !amount) return;
 
-    setProcessing(true);
+  setProcessing(true);
 
-    try {
-      const { data: profileData, error: fetchError } = await supabase
-        .from('profiles')
-        .select('balance')
-        .eq('id', user.id)
-        .single();
-
-      if (fetchError) throw fetchError;
-
-      const currentBalance = profileData?.balance || 0;
-      const depositAmount = parseFloat(amount);
-      const newBalance = currentBalance + depositAmount;
-
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ balance: newBalance })
-        .eq('id', user.id);
-
-      if (updateError) throw updateError;
-
-      const { error: transactionError } = await supabase
-        .from('transactions')
-        .insert({
-          user_id: user.id,
-          type: 'deposit',
-          amount: depositAmount,
-        });
-
-      if (transactionError) {
-        console.error('Transaction record error:', transactionError);
+  try {
+    const depositAmount = parseFloat(amount);
+    // ✅ Insert a ticket for manual verification
+    const { error: ticketError } = await supabase
+    .from('Tickets') // or 'balance_requests'
+    .insert([
+      {
+        amount: depositAmount,
+        type: 'Deposit',
+        ticket_status: 'pending', // default status
+        // user_id: user.id, // OR leave this out if using trigger
       }
+    ]);
+    console.log(depositAmount);
 
-      Alert.alert(
-        'Payment Successful!',
-        `₹${depositAmount.toLocaleString('en-IN')} has been added to your account.`,
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              router.dismissAll();
-              router.replace('/(tabs)');
-            },
+    if (ticketError) throw ticketError;
+
+    Alert.alert(
+      'Request Sent!',
+      `₹${depositAmount.toLocaleString('en-IN')} deposit request has been submitted. It will be added to your balance after verification.`,
+      [
+        {
+          text: 'OK',
+          onPress: () => {
+            router.dismissAll();
+            router.replace('/(tabs)');
           },
-        ]
-      );
-    } catch (error) {
-      console.error('Payment processing error:', error);
-      Alert.alert(
-        'Payment Failed',
-        'There was an error processing your payment. Please try again.',
-        [{ text: 'OK' }]
-      );
-    } finally {
-      setProcessing(false);
-    }
-  };
+        },
+      ]
+    );
+  } catch (error) {
+    console.error('Ticket creation error:', error);
+    Alert.alert(
+      'Error',
+      'There was a problem submitting your request. Please try again.',
+      [{ text: 'OK' }]
+    );
+  } finally {
+    setProcessing(false);
+  }
+};
 
   const handleClose = () => {
     router.back();
