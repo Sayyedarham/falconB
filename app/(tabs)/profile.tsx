@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
-import { User, Settings, CircleHelp as HelpCircle, Shield, LogOut, ChevronRight } from 'lucide-react-native';
+import { User, Settings, CircleHelp as HelpCircle, Shield, LogOut, ChevronRight, Tag } from 'lucide-react-native';
 
 export default function ProfileScreen() {
   const { user, signOut } = useAuth();
@@ -51,7 +51,7 @@ export default function ProfileScreen() {
       onPress: () => {},
     },
      {
-      icon: HelpCircle,
+      icon: Tag,
       title: 'Tickets',
       subtitle: 'See status of your tickets',
       onPress: () => {

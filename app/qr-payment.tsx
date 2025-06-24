@@ -7,6 +7,7 @@ import {
   Image,
   ScrollView,
   Alert,
+  TextInput,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,70 +21,9 @@ export default function QRPaymentScreen() {
   const { amount } = useLocalSearchParams<{ amount: string }>();
   const { user } = useAuth();
   const [processing, setProcessing] = useState(false);
-
-  // const handlePaymentMade = async () => {
-  //   if (!user || !amount) return;
-
-  //   setProcessing(true);
-
-  //   try {
-  //     const { data: profileData, error: fetchError } = await supabase
-  //       .from('profiles')
-  //       .select('balance')
-  //       .eq('id', user.id)
-  //       .single();
-
-  //     if (fetchError) throw fetchError;
-
-  //     const currentBalance = profileData?.balance || 0;
-  //     const depositAmount = parseFloat(amount);
-  //     const newBalance = currentBalance + depositAmount;
-
-  //     const { error: updateError } = await supabase
-  //       .from('profiles')
-  //       .update({ balance: newBalance })
-  //       .eq('id', user.id);
-
-  //     if (updateError) throw updateError;
-
-  //     const { error: transactionError } = await supabase
-  //       .from('transactions')
-  //       .insert({
-  //         user_id: user.id,
-  //         type: 'deposit',
-  //         amount: depositAmount,
-  //       });
-
-  //     if (transactionError) {
-  //       console.error('Transaction record error:', transactionError);
-  //     }
-
-  //     Alert.alert(
-  //       'Payment Successful!',
-  //       `₹${depositAmount.toLocaleString('en-IN')} has been added to your account.`,
-  //       [
-  //         {
-  //           text: 'OK',
-  //           onPress: () => {
-  //             router.dismissAll();
-  //             router.replace('/(tabs)');
-  //           },
-  //         },
-  //       ]
-  //     );
-  //   } catch (error) {
-  //     console.error('Payment processing error:', error);
-  //     Alert.alert(
-  //       'Payment Failed',
-  //       'There was an error processing your payment. Please try again.',
-  //       [{ text: 'OK' }]
-  //     );
-  //   } finally {
-  //     setProcessing(false);
-  //   }
-  // };
+  const [transactionId,setTransactionId] = useState<string>("");
   const handlePaymentMade = async () => {
-  if (!user || !amount) return;
+  if (!user || !amount || !transactionId) return;
 
   setProcessing(true);
 
@@ -97,6 +37,7 @@ export default function QRPaymentScreen() {
         amount: depositAmount,
         type: 'Deposit',
         ticket_status: 'pending', // default status
+        transaction_id:transactionId
         // user_id: user.id, // OR leave this out if using trigger
       }
     ]);
@@ -154,7 +95,18 @@ export default function QRPaymentScreen() {
             </Text>
           </View>
         </View>
-
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="enter your transaction_id"
+            value={transactionId}
+            onChangeText={setTransactionId}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            placeholderTextColor="#999"
+          />
+        </View>
         <View style={styles.qrSection}>
           <Text style={styles.qrTitle}>Scan QR Code to Pay</Text>
           <Text style={styles.qrSubtitle}>
@@ -209,6 +161,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8F9FA',
+  },
+  input: {
+    flex: 1,
+    height: 56,
+    fontSize: 16,
+    fontFamily: 'Inter-Regular',
+    color: '#1a1a1a',
   },
   header: {
     flexDirection: 'row',
@@ -349,4 +308,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
     marginLeft: 8,
   },
+    inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F8F9FA',
+    borderRadius: 12,
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#E5E5E7',
+  }
 });
