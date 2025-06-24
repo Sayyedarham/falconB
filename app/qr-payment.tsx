@@ -31,7 +31,7 @@ export default function QRPaymentScreen() {
     const depositAmount = parseFloat(amount);
     // ✅ Insert a ticket for manual verification
     const { error: ticketError } = await supabase
-    .from('Tickets') // or 'balance_requests'
+    .from('tickets') // or 'balance_requests'
     .insert([
       {
         amount: depositAmount,

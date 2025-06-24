@@ -19,7 +19,7 @@ export default function TicketsScreen() {
   const fetchTickets = async () => {
     console.log("Fetching tickets for user:", user?.id);
     const { data, error } = await supabase
-      .from('Tickets') // lowercase
+      .from('tickets') // lowercase
       .select('*')
       .eq('user_id', user?.id)
       .order('created_at', { ascending: false });
