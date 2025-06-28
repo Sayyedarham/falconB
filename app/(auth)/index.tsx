@@ -10,7 +10,7 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { TrendingUp, Mail, Lock } from 'lucide-react-native';
 
@@ -96,11 +96,16 @@ export default function LoginScreen() {
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>Don't have an account? </Text>
-            <Link href="/(auth)/signup" asChild>
-              <TouchableOpacity>
-                <Text style={styles.linkText}>Sign Up</Text>
-              </TouchableOpacity>
-            </Link>
+            <TouchableOpacity
+              onPress={() => {
+                setEmail('');
+                setPassword('');
+                setError('');
+                router.replace('/(auth)/signup');
+              }}
+            >
+              <Text style={styles.linkText}>Sign Up</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>

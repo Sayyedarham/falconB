@@ -9,9 +9,9 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import { Link, router } from 'expo-router';
+import { TrendingUp, Mail, Lock } from 'lucide-react-native';
+import { router } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
-import { TrendingUp, Mail, Lock, User } from 'lucide-react-native';
 
 export default function SignUpScreen() {
   const [email, setEmail] = useState('');
@@ -118,11 +118,17 @@ export default function SignUpScreen() {
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>Already have an account? </Text>
-            <Link href="/(auth)" asChild>
-              <TouchableOpacity>
-                <Text style={styles.linkText}>Sign In</Text>
-              </TouchableOpacity>
-            </Link>
+            <TouchableOpacity
+              onPress={() => {
+                setEmail('');
+                setPassword('');
+                setConfirmPassword('');
+                setError('');
+                router.replace('/(auth)');
+              }}
+            >
+              <Text style={styles.linkText}>Sign In</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
