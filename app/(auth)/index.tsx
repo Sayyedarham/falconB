@@ -96,11 +96,11 @@ export default function LoginScreen() {
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>Don't have an account? </Text>
-            <Link href="/(auth)/signup" asChild>
-              <TouchableOpacity>
+            {/* <Link href="/(auth)/signup" asChild> */}
+              <TouchableOpacity onPress={()=>router.push('/(auth)/signup')}>
                 <Text style={styles.linkText}>Sign Up</Text>
               </TouchableOpacity>
-            </Link>
+            {/* </Link> */}
           </View>
         </View>
       </ScrollView>

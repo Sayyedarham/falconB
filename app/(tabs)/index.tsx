@@ -91,7 +91,7 @@ export default function AccountScreen() {
 
   const handleWithdraw = () => {
     // TODO: Implement withdraw functionality
-    router.push('/withdraw');
+    // router.push('/withdraw');
   };
 
   if (loading) {
@@ -177,7 +177,6 @@ export default function AccountScreen() {
             profileData?.pl && profileData.pl > 0 ? styles.positiveValue : styles.negativeValue
           ]}>
             {profileData ? formatBalance(profileData.pl) : '₹0.00'}
-          </Text>
           {profileData?.pl && (
             profileData.pl > 0 ? (
               <TrendingUp size={16} color="#34C759" style={styles.trendIcon} />
@@ -185,6 +184,7 @@ export default function AccountScreen() {
               <TrendingDown size={16} color="#FF3B30" style={styles.trendIcon} />
             )
           )}
+          </Text>
         </View>
       </View>
 
