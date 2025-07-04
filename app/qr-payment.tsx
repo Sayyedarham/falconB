@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -17,10 +17,11 @@ import { X, CircleCheck as CheckCircle, IndianRupee } from 'lucide-react-native'
 // ✅ Import the local QR image
 const qrImage = require('@/assets/images/qr-code.png');
 
-export default function QRPaymentScreen() {
+export default function QRPaymentScreen() {``
   const { amount } = useLocalSearchParams<{ amount: string }>();
   const { user } = useAuth();
   const [processing, setProcessing] = useState(false);
+  const [image,setImage] = useState<string>();
   const [transactionId,setTransactionId] = useState<string>("");
   const handlePaymentMade = async () => {
   if (!user || !amount || !transactionId) return;
@@ -69,11 +70,28 @@ export default function QRPaymentScreen() {
     setProcessing(false);
   }
 };
+const fetchImage = async () => {
+  const { data, error } = await supabase
+    .storage
+    .from('images')
+    .getPublicUrl('PaymentQR/qr-code.png');
+
+  if (error || !data?.publicUrl) {
+    console.log(" Error fetching image:", error?.message);
+    return;
+  }
+
+  console.log("Fetched Image URL:", data.publicUrl);
+  setImage(data.publicUrl);
+};
+
 
   const handleClose = () => {
     router.back();
   };
-
+  useEffect(()=>{
+    fetchImage();
+  },[])
   return (
     <ScrollView>
     <View style={styles.container}>
@@ -114,11 +132,17 @@ export default function QRPaymentScreen() {
           </Text>
 
           <View style={styles.qrContainer}>
-            <Image
-              source={qrImage}
+            {image ? (
+             <Image
+              source={{ uri: `${image}?t=${Date.now()}` }} 
               style={styles.qrImage}
               resizeMode="contain"
             />
+
+            ) : (
+              <Text style={{ color: '#999' }}>Loading QR...</Text>
+            )}
+
           </View>
 
           <View style={styles.instructionsCard}>

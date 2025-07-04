@@ -1,25 +1,68 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { TrendingUp, TrendingDown, Clock, CircleAlert as AlertCircle } from 'lucide-react-native';
+import { supabase } from '@/lib/supabase';
 
-const currencyPairs = [
-  { pair: 'EUR/USD', price: '1.0892', change: '+0.0012', changePercent: '+0.11%', trend: 'up' },
-  { pair: 'GBP/USD', price: '1.2734', change: '-0.0023', changePercent: '-0.18%', trend: 'down' },
-  { pair: 'USD/JPY', price: '149.85', change: '+0.45', changePercent: '+0.30%', trend: 'up' },
-  { pair: 'AUD/USD', price: '0.6598', change: '-0.0015', changePercent: '-0.23%', trend: 'down' },
-  { pair: 'USD/CAD', price: '1.3542', change: '+0.0008', changePercent: '+0.06%', trend: 'up' },
-  { pair: 'USD/CHF', price: '0.8876', change: '-0.0012', changePercent: '-0.14%', trend: 'down' },
-];
+export interface Asset{
+  asset_name:string,
+  asset_price:number,
+  change_percent:number,
+  price_change:number,
+  trend:string
+}
+
+/*
+  to dos:
+    1) when clicked on any asset view a half screen to buy the asset which essentially places an order
+    2) and add dummy chart to half screen
+*/
 
 export default function MarketScreen() {
+  const [currencyPairs,setCurrencyPairs] = useState<Asset[]>([]);
+  const [loading,setLoading] = useState(false);
+  const [error,setError] = useState<string>("");
+  const getPrices = async ()=>{
+    setLoading(true);
+    const {data,error} = await supabase
+      .from("asset")
+      .select("*");
+    
+    if(error){
+      setError(`Error: ${error}`);
+    }else{
+      setCurrencyPairs(data);
+    }
+    setLoading(false);
+  }
+  useEffect(()=>{
+    getPrices();
+
+    const interval = setInterval(getPrices, 15000);
+
+    return () => clearInterval(interval);
+  },[])
+if (loading) {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={{ fontSize: 16 }}>Loading...</Text>
+    </View>
+  );
+}
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Market</Text>
         <Text style={styles.betaText}>Beta Version</Text>
       </View>
+      {
+        error &&  
+        <View style={styles.Errorheader}>
+          <Text style={styles.errorTitle}>Error</Text>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      }
 
-      <View style={styles.statusCard}>
+      {/* <View style={styles.statusCard}>
         <View style={styles.statusIcon}>
           <Clock size={32} color="#FF9500" />
         </View>
@@ -27,7 +70,7 @@ export default function MarketScreen() {
         <Text style={styles.statusMessage}>
           Showing last available prices. Live trading is currently unavailable.
         </Text>
-      </View>
+      </View> */}
 
       <View style={styles.pairsContainer}>
         <Text style={styles.sectionTitle}>Currency Pairs</Text>
@@ -35,41 +78,41 @@ export default function MarketScreen() {
         {currencyPairs.map((item, index) => (
           <View key={index} style={styles.pairCard}>
             <View style={styles.pairInfo}>
-              <Text style={styles.pairName}>{item.pair}</Text>
-              <Text style={styles.pairPrice}>{item.price}</Text>
+              <Text style={styles.pairName}>{item.asset_name}</Text>
+              <Text style={styles.pairPrice}>{item.asset_price}</Text>
             </View>
             
             <View style={styles.changeInfo}>
               <View style={styles.changeRow}>
-                {item.trend === 'up' ? (
+                {item.trend === 'UP' ? (
                   <TrendingUp size={16} color="#34C759" />
                 ) : (
                   <TrendingDown size={16} color="#FF3B30" />
                 )}
                 <Text style={[
                   styles.changeValue,
-                  item.trend === 'up' ? styles.positiveChange : styles.negativeChange
+                  item.trend === 'UP' ? styles.positiveChange : styles.negativeChange
                 ]}>
-                  {item.change}
+                  {item.price_change}
                 </Text>
               </View>
               <Text style={[
                 styles.changePercent,
-                item.trend === 'up' ? styles.positiveChange : styles.negativeChange
+                item.trend === 'UP' ? styles.positiveChange : styles.negativeChange
               ]}>
-                {item.changePercent}
+                {item.change_percent}
               </Text>
             </View>
           </View>
         ))}
       </View>
 
-      <View style={styles.infoCard}>
+      {/* <View style={styles.infoCard}>
         <AlertCircle size={20} color="#007AFF" style={styles.infoIcon} />
         <Text style={styles.infoText}>
           Real-time market data and advanced charting will be available in the next phase.
         </Text>
-      </View>
+      </View> */}
     </ScrollView>
   );
 }
@@ -88,6 +131,25 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontFamily: 'Inter-Bold',
     color: '#1a1a1a',
+  },
+  Errorheader: {
+    backgroundColor: '#ffe6e6', // Light red background
+    padding: 12,
+    marginHorizontal: 16,
+    marginVertical: 8,
+    borderRadius: 8,
+    borderColor: '#ff4d4d', // Red border
+    borderWidth: 1,
+  },
+  errorTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#b30000', // Dark red text
+    marginBottom: 4,
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#800000', // Slightly muted red
   },
   betaText: {
     fontSize: 14,
