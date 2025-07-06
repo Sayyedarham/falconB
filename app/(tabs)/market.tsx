@@ -2,6 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { TrendingUp, TrendingDown, Clock, CircleAlert as AlertCircle } from 'lucide-react-native';
 import { supabase } from '@/lib/supabase';
+// import CountryFlag from "react-native-country-flag";
+// // import flags from "react-native-country-flag/data";
+// import XAU from '../icons/XAU';
+// import BTC from '../icons/BTCUSD';
+// import USOIL from '../icons/USOIL';
+import AssetIcon from '../icons/AssetIcon';
 
 export interface Asset{
   asset_name:string,
@@ -18,6 +24,11 @@ export interface Asset{
 */
 
 export default function MarketScreen() {
+  const currencyIcon = {
+    "XAUUSD":"XAU",
+    "BTCUSD":"BTC",
+    "USOIL":"USOIL"
+  }
   const [currencyPairs,setCurrencyPairs] = useState<Asset[]>([]);
   const [loading,setLoading] = useState(false);
   const [error,setError] = useState<string>("");
@@ -52,7 +63,6 @@ if (loading) {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Market</Text>
-        <Text style={styles.betaText}>Beta Version</Text>
       </View>
       {
         error &&  
@@ -77,6 +87,12 @@ if (loading) {
         
         {currencyPairs.map((item, index) => (
           <View key={index} style={styles.pairCard}>
+             <View style={styles.leftSection}>
+             <View style={styles.flagsRow}>
+              <AssetIcon assetName={item.asset_name} iso1={item?.isoCode1 || "null"} iso2={item?.isoCode2 || "null"} />
+          </View>
+          <Text style={styles.pairName}>{item.asset_name}</Text>
+      </View>
             <View style={styles.pairInfo}>
               <Text style={styles.pairName}>{item.asset_name}</Text>
               <Text style={styles.pairPrice}>{item.asset_price}</Text>
@@ -274,4 +290,30 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     lineHeight: 18,
   },
+  leftSection: {
+  flex: 1,
+  justifyContent: 'center',
+},
+flagsRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginBottom: 4,
+},
+flag: {
+  marginRight: 4,
+  borderRadius: 3,
+  overflow: 'hidden',
+},
+middleSection: {
+  flex: 1,
+  alignItems: 'center',
+},
+rightSection: {
+  flex: 1,
+  alignItems: 'flex-end',
+},
+trendRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
 });

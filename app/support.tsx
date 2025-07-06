@@ -6,10 +6,10 @@ export default function SupportScreen() {
       <Text style={styles.title}>Support Contact</Text>
       <View style={styles.card}>
         <Text style={styles.label}>Phone:</Text>
-        <Text style={styles.value}>+91 73891 79872</Text>
+        <Text style={styles.value}>+91 89622 63120</Text>
 
         <Text style={styles.label}>Email:</Text>
-        <Text style={styles.value}>professor.369.money@gmail.com</Text>
+        <Text style={styles.value}>thefalconuniversity@gmail.com</Text>
       </View>
     </View>
   );

@@ -3,7 +3,7 @@ import "dotenv/config";
 export default {
   expo: {
     name: "TheFalconCapital",
-    slug: "thefalconcapital",
+    slug: "thefalconuniversity",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/images/iconn.jpg",
