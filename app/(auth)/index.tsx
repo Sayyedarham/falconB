@@ -51,7 +51,7 @@ export default function LoginScreen() {
           <View style={styles.logoContainer}>
             <TrendingUp size={40} color="#007AFF" strokeWidth={2.5} />
           </View>
-          <Text style={styles.title}>TheFalconUniversity</Text>
+          <Text style={styles.title}>TheFalconCapital</Text>
           <Text style={styles.subtitle}>Welcome back to your trading platform</Text>
         </View>
 

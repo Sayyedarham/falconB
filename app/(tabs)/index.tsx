@@ -91,7 +91,9 @@ export default function AccountScreen() {
 
   const handleWithdraw = () => {
     // TODO: Implement withdraw functionality
-    // router.push('/withdraw');
+    router.push({
+      pathname: '/withdraw'
+    });
   };
 
   if (loading) {
@@ -132,7 +134,7 @@ export default function AccountScreen() {
           </View>
           <View style={styles.cardInfo}>
             <Text style={styles.accountNumber}>
-              {profileData?.account_number || 'Loading...'}
+              {profileData?.account_number.slice(0,8).toLocaleUpperCase() || 'Loading...'}
             </Text>
             <Text style={styles.accountType}>
               {profileData?.account_type || 'Standard'} Account
@@ -149,7 +151,7 @@ export default function AccountScreen() {
 
         <View style={styles.cardFooter}>
           <Text style={styles.serverInfo}>
-            {profileData?.server || 'FXTrader-Live01'} • {profileData?.leverage || '1:2000'}
+            {profileData?.server || 'FalconTrading-02E'} • {profileData?.leverage || '1:2000'}
           </Text>
         </View>
       </View>

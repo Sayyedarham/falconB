@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
-import { TrendingUp, Mail, Lock, User } from 'lucide-react-native';
+import { TrendingUp, Mail, Lock, User,BookUser  } from 'lucide-react-native';
 
 export default function SignUpScreen() {
   const [email, setEmail] = useState('');
@@ -19,14 +19,21 @@ export default function SignUpScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState<string>('');
+  const [userName,setUserName] = useState<string>('');
+
   const { signUp } = useAuth();
 
   const handleSignUp = async () => {
-    if (!email || !password || !confirmPassword) {
+    if (!email || !password || !confirmPassword || !phoneNumber || !userName) {
       setError('Please fill in all fields');
       return;
     }
-
+    if(!email.includes('@')){
+      setError('Please enter valid mail address');
+      return;
+      
+    }
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -40,7 +47,7 @@ export default function SignUpScreen() {
     setLoading(true);
     setError('');
 
-    const { error } = await signUp(email, password);
+    const { error } = await signUp(email, password,phoneNumber,userName);
 
     if (error) {
       setError(error.message);
@@ -80,6 +87,28 @@ export default function SignUpScreen() {
               autoCorrect={false}
               placeholderTextColor="#999"
             />
+          </View>
+          <View style={styles.inputContainer}>
+            <BookUser size={20} color="#666" style={styles.inputIcon} />
+            <TextInput
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              placeholder="Enter phone number"
+              keyboardType="phone-pad"
+              maxLength={15}
+              style={styles.input}
+            />
+
+          </View>
+          <View style={styles.inputContainer}>
+            <User size={20} color="#666" style={styles.inputIcon} />
+            <TextInput
+              value={userName}
+              onChangeText={setUserName}
+              placeholder="Choose Username"
+              style={styles.input}
+            />
+
           </View>
 
           <View style={styles.inputContainer}>

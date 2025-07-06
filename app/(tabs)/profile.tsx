@@ -48,7 +48,11 @@ export default function ProfileScreen() {
       icon: HelpCircle,
       title: 'Help & Support',
       subtitle: 'Get help and contact support',
-      onPress: () => {},
+      onPress: () => {
+        router.push({
+          pathname: '/support'
+        })
+      },
     },
      {
       icon: Tag,

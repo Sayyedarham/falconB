@@ -2,11 +2,11 @@ import "dotenv/config";
 
 export default {
   expo: {
-    name: "TheFalconUniversity",
-    slug: "thefalconuniversity",
+    name: "TheFalconCapital",
+    slug: "thefalconcapital",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/images/iconn.png",
+    icon: "./assets/images/iconn.jpg",
     scheme: "myapp",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,

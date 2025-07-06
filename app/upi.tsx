@@ -15,29 +15,30 @@ import { supabase } from '@/lib/supabase';
 import { X, CircleCheck as CheckCircle, IndianRupee } from 'lucide-react-native';
 
 
-export default function QRPaymentScreen() {``
-  const { amount } = useLocalSearchParams<{ amount: string }>();
+export default function UPIwithdraw() {
   const { user } = useAuth();
   const [processing, setProcessing] = useState(false);
-  const [image,setImage] = useState<string>();
-  const [transactionId,setTransactionId] = useState<string>("");
+    const [amount,setAmount] = useState('');
+    const [phone,setPhone] = useState('');
+    const [upiID,setUpiID] = useState('');
+
   const handlePaymentMade = async () => {
-  if (!user || !amount || !transactionId) return;
+  if (!user || !amount || !phone || !upiID) return;
 
   setProcessing(true);
 
   try {
     const depositAmount = parseFloat(amount);
-    // ✅ Insert a ticket for manual verification
     const { error: ticketError } = await supabase
-    .from('tickets') // or 'balance_requests'
+    .from('tickets') 
     .insert([
       {
         amount: depositAmount,
-        type: 'Deposit',
-        ticket_status: 'pending', // default status
-        transaction_id:transactionId
-        // user_id: user.id, // OR leave this out if using trigger
+        type: 'Withdraw',
+        ticket_status: 'pending',
+        is_upi:true,
+        phone:phone,
+        upi_id:upiID
       }
     ]);
     console.log(depositAmount);
@@ -46,7 +47,7 @@ export default function QRPaymentScreen() {``
 
     Alert.alert(
       'Request Sent!',
-      `₹${depositAmount.toLocaleString('en-IN')} deposit request has been submitted. It will be added to your balance after verification.`,
+      `₹${depositAmount.toLocaleString('en-IN')} withdraw request has been submitted. It will be deducted from your balance after verification.`,
       [
         {
           text: 'OK',
@@ -68,28 +69,17 @@ export default function QRPaymentScreen() {``
     setProcessing(false);
   }
 };
-const fetchImage = async () => {
-  const { data, error } = await supabase
-    .storage
-    .from('images')
-    .getPublicUrl('PaymentQR/qr-code.png');
-
-  if (error || !data?.publicUrl) {
-    console.log(" Error fetching image:", error?.message);
-    return;
-  }
-
-  console.log("Fetched Image URL:", data.publicUrl);
-  setImage(data.publicUrl);
-};
-
+    const handleAccountPayment = ()=>{
+        router.push({
+            pathname:'/withdraw'
+        })
+    }
 
   const handleClose = () => {
-    router.back();
+    router.push({
+          pathname:'/(tabs)'
+    });
   };
-  useEffect(()=>{
-    fetchImage();
-  },[])
   return (
     <ScrollView>
     <View style={styles.container}>
@@ -97,72 +87,61 @@ const fetchImage = async () => {
         <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
           <X size={24} color="#666" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Complete Payment</Text>
+        <Text style={styles.headerTitle}>Complete Withdraw</Text>
         <View style={styles.placeholder} />
       </View>
 
       <View style={styles.content}>
         <View style={styles.amountCard}>
-          <Text style={styles.amountLabel}>Amount to Pay</Text>
+          <Text style={styles.amountLabel}>Amount to Withdraw</Text>
           <View style={styles.amountRow}>
             <IndianRupee size={24} color="#007AFF" />
-            <Text style={styles.amountText}>
-              {parseFloat(amount || '0').toLocaleString('en-IN')}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.inputContainer}>
-          <TextInput
+            <TextInput
             style={styles.input}
-            placeholder="enter your transaction_id"
-            value={transactionId}
-            onChangeText={setTransactionId}
+            placeholder="Withdraw Amount"
+            value={amount}
+            onChangeText={setAmount}
             keyboardType="email-address"
             autoCapitalize="none"
             autoCorrect={false}
             placeholderTextColor="#999"
           />
-        </View>
-        <View style={styles.qrSection}>
-          <Text style={styles.qrTitle}>Scan QR Code to Pay</Text>
-          <Text style={styles.qrSubtitle}>
-            Use any UPI app to scan and complete the payment
-          </Text>
-
-          <View style={styles.qrContainer}>
-            {image ? (
-             <Image
-              source={{ uri: `${image}?t=${Date.now()}` }} 
-              style={styles.qrImage}
-              resizeMode="contain"
-            />
-
-            ) : (
-              <Text style={{ color: '#999' }}>Loading QR...</Text>
-            )}
-
-          </View>
-
-          <View style={styles.instructionsCard}>
-            <Text style={styles.instructionsTitle}>Payment Instructions</Text>
-            <Text style={styles.instructionText}>
-              1. Open your UPI app (PhonePe, Google Pay, Paytm, etc.)
-            </Text>
-            <Text style={styles.instructionText}>
-              2. Scan the QR code above
-            </Text>
-            <Text style={styles.instructionText}>
-              3. Enter the amount: ₹{parseFloat(amount || '0').toLocaleString('en-IN')}
-            </Text>
-            <Text style={styles.instructionText}>
-              4. Complete the payment
-            </Text>
-            <Text style={styles.instructionText}>
-              5. Click "Payment Made" below
-            </Text>
           </View>
         </View>
-
+        <View style={styles.accountCont}>
+          <View>
+            <TextInput
+              style={styles.input}
+              placeholder="Phone Number"
+              value={phone}
+              onChangeText={setPhone}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholderTextColor="#999"
+              />
+          </View>
+          <View>
+            <TextInput
+              style={styles.input}
+              placeholder="UPI ID"
+              value={upiID}
+              onChangeText={setUpiID}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholderTextColor="#999"
+              />
+          </View>
+        </View>
+        <TouchableOpacity
+                  style={[styles.navigateBtn, processing && styles.paymentButtonDisabled]}
+                  onPress={handleAccountPayment}
+                >
+                  <Text style={styles.paymentButtonText}>
+                    Use Bank Account instead
+                  </Text>
+                </TouchableOpacity>
         <TouchableOpacity
           style={[styles.paymentButton, processing && styles.paymentButtonDisabled]}
           onPress={handlePaymentMade}
@@ -170,7 +149,7 @@ const fetchImage = async () => {
         >
           <CheckCircle size={20} color="#fff" />
           <Text style={styles.paymentButtonText}>
-            {processing ? 'Processing...' : 'Payment Made'}
+            {processing ? 'Processing...' : 'Withdraw'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -180,14 +159,43 @@ const fetchImage = async () => {
 }
 
 const styles = StyleSheet.create({
+      navigateBtn:{
+    backgroundColor: '#212121',
+    marginVertical:10,
+    borderRadius: 12,
+    height: 56,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#34C759',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+    
+  },
   container: {
     flex: 1,
     backgroundColor: '#F8F9FA',
+  },
+  middleCont:{
+    flex:1,
+    alignItems:'center',
+  },
+  middleText:{
+    color:'#1a1a1a'
+  },
+  accountCont:{
+    borderColor:'#E5E5E7',
+    marginVertical:20, 
+    borderWidth:1,
+    borderRadius:10,
   },
   input: {
     flex: 1,
     height: 56,
     fontSize: 16,
+    margin:5,
     fontFamily: 'Inter-Regular',
     color: '#1a1a1a',
   },
@@ -307,7 +315,7 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   paymentButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: '#FF3B30',
     borderRadius: 12,
     height: 56,
     flexDirection: 'row',
