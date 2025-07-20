@@ -4,11 +4,12 @@ import { createClient } from '@supabase/supabase-js';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 
-const extra = Constants.expoConfig?.extra || Constants?.manifest?.extra
-const supabaseURL = extra?.supabaseUrl;
-const supabaseKey = extra?.supabaseKey;
+// Temporary hardcoded values for testing
+const supabaseURL = 'https://octrmpemwlrctlchbalj.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jdHJtcGVtd2xyY3RsY2hiYWxqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0OTU5NzgsImV4cCI6MjA2NjA3MTk3OH0.79P9rZiI58GRF2p7_WtHFxhgDshQBECCcVriEdGiGmU';
 
- console.log(supabaseURL,supabaseKey);
+console.log('Supabase URL:', supabaseURL);
+console.log('Supabase Key:', supabaseKey);
 // Use AsyncStorage only on native platforms
 const storage = Platform.OS === 'web' ? undefined : {
   getItem: (key: string) => {

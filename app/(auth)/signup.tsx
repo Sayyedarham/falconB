@@ -23,6 +23,7 @@ export default function SignUpScreen() {
   const [userNameFlag,setUserNameFlag] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [userName,setUserName] = useState<string>('');
+  const [aadharNo, setAadharNo] = useState('');
 
   const { signUp } = useAuth();
     const isUsernameAvailable = async (username:string)=> {
@@ -46,8 +47,12 @@ export default function SignUpScreen() {
     return false
   }
   const handleSignUp = async () => {
-    if (!email || !password || !confirmPassword || !phoneNumber || !userName) {
+    if (!email || !password || !confirmPassword || !phoneNumber || !userName || !aadharNo) {
       setError('Please fill in all fields');
+      return;
+    }
+    if (aadharNo.length !== 12 || !/^\d{12}$/.test(aadharNo)) {
+      setError('Please enter a valid 12-digit Aadhar number');
       return;
     }
     if(!(await isUsernameAvailable(userName))){
@@ -72,7 +77,7 @@ export default function SignUpScreen() {
     setLoading(true);
     setError('');
 
-    const { error } = await signUp(email, password,phoneNumber,userName);
+    const { error } = await signUp(email, password, phoneNumber, userName, aadharNo);
 
     if (error) {
       setError(error.message);
@@ -123,7 +128,17 @@ export default function SignUpScreen() {
               maxLength={15}
               style={styles.input}
             />
-
+          </View>
+          <View style={styles.inputContainer}>
+            <User size={20} color="#666" style={styles.inputIcon} />
+            <TextInput
+              value={aadharNo}
+              onChangeText={setAadharNo}
+              placeholder="Aadhar No."
+              keyboardType="numeric"
+              maxLength={12}
+              style={styles.input}
+            />
           </View>
           <View style={styles.inputContainer}>
             <User size={20} color="#666" style={styles.inputIcon} />
